@@ -1,45 +1,18 @@
-const CACHE_NAME = 'wiki-pwa-v1';
-const ASSETS_TO_CACHE = [
-  './',
-  './index.html',
-  './manifest.json',
-  'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
-  'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'
-];
+const CACHE_NAME = 'wiki-pwa-v2';
 
-// インストール時に基本アセットをキャッシュ
-self.addEventListener('install', (e) => {
-  e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
-    })
-  );
+self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
-// 古いキャッシュの削除
-self.addEventListener('activate', (e) => {
-  e.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.map((k) => {
-          if (k !== CACHE_NAME) return caches.delete(k);
-        })
-      );
-    })
-  );
-  self.clients.claim();
+self.addEventListener('activate', (event) => {
+  event.waitUntil(clients.claim());
 });
 
-// ネットワーク優先（オフライン時はキャッシュから返す）
-self.addEventListener('fetch', (e) => {
-  // WikipediaのREST API等は常に最新を取りに行く
-  if (e.request.url.includes('wikipedia.org') || e.request.url.includes('allorigins')) {
-    e.respondWith(fetch(e.request));
-    return;
-  }
-
-  e.respondWith(
-    fetch(e.request).catch(() => caches.match(e.request))
+self.addEventListener('fetch', (event) => {
+  // 基本はネットワークから最新を取得
+  event.respondWith(
+    fetch(event.request).catch(() => {
+      return caches.match(event.request);
+    })
   );
 });
