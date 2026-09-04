@@ -7,6 +7,23 @@
   <meta name="referrer" content="no-referrer">
   <title>Wiki Constellation Explorer</title>
 
+  <!-- PWA / iOS対応タグ -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0B0F19">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="WikiExplorer">
+  <link rel="apple-touch-icon" href="https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png">
+
+  <script>
+    // サービスワーカーの登録
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+  </script>
+
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
